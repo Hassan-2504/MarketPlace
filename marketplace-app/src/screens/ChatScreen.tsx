@@ -88,7 +88,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ navigation, route }) => 
           </Text>
           {item.unreadCount > 0 && (
             <View style={styles.unreadBadge}>
-              <Text style={styles.unreadText}>{item.unreadCount}</Text>
+              <Text style={styles.unreadBadgeText}>{item.unreadCount}</Text>
             </View>
           )}
         </View>
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
   },
   unreadCountBadge: {
-    backgroundColor: COLORS.secondaryContainer,
+    backgroundColor: COLORS['secondary-container'],
     borderWidth: 3,
     borderColor: COLORS.primary,
     paddingHorizontal: 12,
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   conversationItemUnread: {
-    backgroundColor: COLORS.surfaceContainerHighest,
+    backgroundColor: COLORS['surface-container-highest'],
     shadowColor: COLORS.primary,
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 1,
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   unreadBadgeText: {
-    color: COLORS.onPrimary,
+    color: COLORS['on-primary'],
     fontSize: 12,
     fontWeight: 'bold',
   },
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   messageTimeRead: {
-    color: COLORS.onSurfaceVariant,
+    color: COLORS['on-surface-variant'],
   },
   conversationFooter: {
     flexDirection: 'row',
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   lastMessageRead: {
-    color: COLORS.onSurfaceVariant,
+    color: COLORS['on-surface-variant'],
   },
   arrowIcon: {
     opacity: 0,
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     borderWidth: 3,
     borderColor: COLORS.primary,
-    shadowColor: COLORS.primaryContainer,
+    shadowColor: COLORS['primary-container'],
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 0,
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'SpaceGrotesk_700Bold',
     fontWeight: '900',
-    color: COLORS.onPrimary,
+    color: COLORS['on-primary'],
     textTransform: 'uppercase',
   },
   chatContainer: {
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
   },
   otherMessageBubble: {
-    backgroundColor: COLORS.surfaceContainerHighest,
+    backgroundColor: COLORS['surface-container-highest'],
     borderBottomLeftRadius: 0,
   },
   messageText: {
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_400Regular',
   },
   ownMessageText: {
-    color: COLORS.onPrimary,
+    color: COLORS['on-primary'],
   },
   otherMessageText: {
     color: COLORS.primary,
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   otherMessageTime: {
-    color: COLORS.onSurfaceVariant,
+    color: COLORS['on-surface-variant'],
   },
   inputContainer: {
     flexDirection: 'row',
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
   },
   messageInputWrapper: {
     flex: 1,
-    backgroundColor: COLORS.surfaceContainerHighest,
+    backgroundColor: COLORS['surface-container-highest'],
     borderWidth: 3,
     borderColor: COLORS.primary,
     marginHorizontal: 8,
@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
   messageInput: {
     fontSize: 16,
     fontFamily: 'Inter_400Regular',
-    color: COLORS.onSurfaceVariant,
+    color: COLORS['on-surface-variant'],
   },
   sendButton: {
     backgroundColor: COLORS.primary,
@@ -482,10 +482,15 @@ const styles = StyleSheet.create({
     borderColor: COLORS.primary,
     borderRadius: 0,
     padding: 12,
-    shadowColor: COLORS.primaryContainer,
+    shadowColor: COLORS['primary-container'],
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 0,
     elevation: 0,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: COLORS.primary,
+    marginLeft: 80,
   },
 });
