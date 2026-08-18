@@ -1,7 +1,28 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, TextInput } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, TextInput, ScrollView } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useChat } from '../context/ChatContext';
+
+// Bauhaus Market Color Palette
+const COLORS = {
+  background: '#f5f0e8',
+  primary: '#1a1a1a',
+  'on-primary': '#ffffff',
+  'primary-container': '#ffcc00',
+  'on-primary-container': '#1a1a1a',
+  secondary: '#e63b2e',
+  'on-error': '#ffffff',
+  'surface-container-highest': '#e2ddd4',
+  'surface-variant': '#e8e3da',
+  'on-surface-variant': '#4a4a4a',
+  tertiary: '#0055ff',
+  'tertiary-container': '#d6e3ff',
+  'on-tertiary': '#ffffff',
+  'secondary-container': '#ffdad6',
+  'error-container': '#ffdad6',
+  white: '#ffffff',
+  black: '#1a1a1a',
+};
 
 interface ChatScreenProps {
   navigation: any;
@@ -119,14 +140,14 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ navigation, route }) => 
         {/* Chat Header */}
         <View style={styles.chatHeader}>
           <TouchableOpacity onPress={() => setIsInChat(false)}>
-            <Ionicons name="chevron-back" size={24} color="#333" />
+            <MaterialIcons name="arrow-back" size={24} color={COLORS.primary} />
           </TouchableOpacity>
           <View style={styles.chatHeaderInfo}>
             <Text style={styles.chatHeaderName}>{currentConversation.participants[0].name}</Text>
             <Text style={styles.chatHeaderStatus}>Online</Text>
           </View>
           <TouchableOpacity>
-            <Ionicons name="information-circle-outline" size={24} color="#333" />
+            <MaterialIcons name="info-outline" size={24} color={COLORS.primary} />
           </TouchableOpacity>
         </View>
 
@@ -142,7 +163,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ navigation, route }) => 
         {/* Message Input */}
         <View style={styles.inputContainer}>
           <TouchableOpacity style={styles.attachButton}>
-            <Ionicons name="attach" size={24} color="#666" />
+            <MaterialIcons name="attach-file" size={24} color="#666" />
           </TouchableOpacity>
           <TextInput
             style={styles.messageInput}
@@ -152,7 +173,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ navigation, route }) => 
             multiline
           />
           <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
-            <Ionicons name="send" size={20} color="#fff" />
+            <MaterialIcons name="send" size={20} color={COLORS.white} />
           </TouchableOpacity>
         </View>
       </View>
