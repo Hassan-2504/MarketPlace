@@ -1,103 +1,108 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 interface ProfileScreenProps {
   navigation: any;
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
-  // Mock user data - in real app, get from auth context
   const user = {
-    id: '1',
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+1234567890',
-    rating: 4.8,
-    totalReviews: 24,
-    joinedDate: 'January 2024',
-    location: 'New York, NY',
+    name: 'MAX BILL',
+    memberSince: '2021',
+    rating: 4.9,
+    totalReviews: 142,
     isVerified: true,
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-4u2HWgY7UT0Oqovrcu1j7g5tAe_rnS0U_mypikcta1mKP-pODPS-KTT1uCeymrs73MBuejCyEx2yHNP6SGlAXc75iWdYCSYv1ZVAaQr88QdifotIs63jHkZXKg-4cHK8Q5R0AVG4wPXO9AJfz-1T3hJ-7fm2bC2URWqFra4BgTg9dImQAYpA10hRVDaLXMQ4Ctq6E4Bz6HOhcauMI3QkjzOJCev2h_nn2iHqXCz105Kj8olO-uRu',
   };
 
-  const menuItems = [
-    { id: '1', icon: 'person-outline', label: 'Edit Profile', screen: 'EditProfile' },
-    { id: '2', icon: 'shield-checkmark-outline', label: 'Verification', screen: 'Verification' },
-    { id: '3', icon: 'location-outline', label: 'My Locations', screen: 'Locations' },
-    { id: '4', icon: 'heart-outline', label: 'Saved Items', screen: 'SavedItems' },
-    { id: '5', icon: 'chatbubble-ellipses-outline', label: 'Notifications', screen: 'Notifications' },
-    { id: '6', icon: 'help-circle-outline', label: 'Help & Support', screen: 'Help' },
-    { id: '7', icon: 'document-text-outline', label: 'Terms & Conditions', screen: 'Terms' },
-    { id: '8', icon: 'lock-closed-outline', label: 'Privacy Policy', screen: 'Privacy' },
+  const settingsItems = [
+    { id: '1', label: 'Account Details' },
+    { id: '2', label: 'Payment Methods' },
+    { id: '3', label: 'Notifications' },
   ];
 
   return (
     <View style={styles.container}>
-      {/* Profile Header */}
-      <View style={styles.header}>
-        <View style={styles.avatarContainer}>
-          <View style={styles.avatar}>
-            <Ionicons name="person" size={40} color="#fff" />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Profile Header */}
+        <View style={styles.profileHeader}>
+          <View style={styles.avatarContainer}>
+            <Image
+              source={{ uri: user.avatar }}
+              style={styles.avatar}
+            />
           </View>
-          {user.isVerified && (
-            <View style={styles.verifiedBadge}>
-              <Ionicons name="checkmark-circle" size={16} color="#fff" />
+          
+          <View style={styles.headerInfo}>
+            <Text style={styles.name}>{user.name}</Text>
+            <Text style={styles.memberSince}>MEMBER SINCE {user.memberSince}</Text>
+            
+            <View style={styles.ratingBadge}>
+              <MaterialIcons name="star" size={24} color="#1a1a1a" />
+              <Text style={styles.ratingValue}>{user.rating}</Text>
+              <Text style={styles.reviewsCount}>({user.totalReviews} REVIEWS)</Text>
             </View>
-          )}
-        </View>
-        
-        <Text style={styles.name}>{user.name}</Text>
-        <Text style={styles.location}>{user.location}</Text>
-        
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <View style={styles.ratingContainer}>
-              <Ionicons name="star" size={18} color="#FFD700" />
-              <Text style={styles.rating}>{user.rating}</Text>
-            </View>
-            <Text style={styles.statLabel}>Rating</Text>
-          </View>
-          
-          <View style={styles.statDivider} />
-          
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{user.totalReviews}</Text>
-            <Text style={styles.statLabel}>Reviews</Text>
-          </View>
-          
-          <View style={styles.statDivider} />
-          
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{user.joinedDate}</Text>
-            <Text style={styles.statLabel}>Joined</Text>
           </View>
         </View>
-      </View>
 
-      {/* Menu Items */}
-      <View style={styles.menuContainer}>
-        {menuItems.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            style={styles.menuItem}
-            onPress={() => item.screen && navigation.navigate(item.screen)}
-          >
-            <View style={styles.menuIconContainer}>
-              <Ionicons name={item.icon as any} size={22} color="#007AFF" />
+        {/* Grid Content */}
+        <View style={styles.gridContainer}>
+          {/* Verification Card */}
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>VERIFICATION</Text>
+              <MaterialIcons name="verified" size={36} color="#1a1a1a" />
             </View>
-            <Text style={styles.menuItemLabel}>{item.label}</Text>
-            <Ionicons name="chevron-forward" size={20} color="#ccc" />
-          </TouchableOpacity>
-        ))}
-      </View>
+            <View style={styles.verifiedButton}>
+              <Text style={styles.verifiedText}>VERIFIED SELLER</Text>
+            </View>
+            <Text style={styles.verifiedDescription}>Identity and banking confirmed.</Text>
+          </View>
 
-      {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton}>
-        <Ionicons name="log-out-outline" size={22} color="#FF3B30" />
-        <Text style={styles.logoutText}>Log Out</Text>
-      </TouchableOpacity>
+          {/* Reviews Card */}
+          <View style={[styles.card, styles.reviewsCard]}>
+            <View style={styles.cardHeader}>
+              <Text style={[styles.cardTitle, styles.reviewsCardTitle]}>MY REVIEWS</Text>
+              <MaterialIcons name="reviews" size={36} color="#1a1a1a" />
+            </View>
+            <View style={styles.reviewContent}>
+              <Text style={styles.reviewQuote}>"Excellent communication, item exactly as described. Pure functional design piece."</Text>
+              <Text style={styles.reviewAuthor}>— ANNI A.</Text>
+            </View>
+            <TouchableOpacity style={styles.readAllButton}>
+              <Text style={styles.readAllText}>READ ALL</Text>
+            </TouchableOpacity>
+          </View>
 
-      <View style={{ height: 40 }} />
+          {/* Settings Card */}
+          <View style={[styles.card, styles.settingsCard]}>
+            <View style={styles.settingsHeader}>
+              <Text style={styles.settingsTitle}>SETTINGS</Text>
+            </View>
+            
+            {settingsItems.map((item, index) => (
+              <TouchableOpacity 
+                key={item.id} 
+                style={[
+                  styles.settingItem,
+                  index !== settingsItems.length - 1 && styles.settingItemBorder
+                ]}
+              >
+                <Text style={styles.settingLabel}>{item.label}</Text>
+                <MaterialIcons name="arrow-forward" size={24} color="#1a1a1a" />
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Logout Button */}
+        <TouchableOpacity style={styles.logoutButton}>
+          <Text style={styles.logoutText}>LOGOUT</Text>
+        </TouchableOpacity>
+
+        <View style={{ height: 100 }} />
+      </ScrollView>
     </View>
   );
 };
@@ -105,122 +110,224 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f5f0e8',
   },
-  header: {
-    backgroundColor: '#fff',
+  profileHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
     padding: 24,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomWidth: 8,
+    borderBottomColor: '#1a1a1a',
+    gap: 32,
   },
   avatarContainer: {
-    position: 'relative',
-    marginBottom: 16,
+    width: 192,
+    height: 192,
+    borderWidth: 4,
+    borderColor: '#1a1a1a',
+    shadowColor: '#1a1a1a',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
+    backgroundColor: '#e2ddd4',
+    overflow: 'hidden',
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#007AFF',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: '100%',
+    height: '100%',
   },
-  verifiedBadge: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    backgroundColor: '#4CAF50',
-    borderRadius: 12,
-    padding: 2,
-    borderWidth: 2,
-    borderColor: '#fff',
+  headerInfo: {
+    flex: 1,
   },
   name: {
+    fontSize: 48,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: -2,
+    color: '#1a1a1a',
+    marginBottom: 8,
+  },
+  memberSince: {
+    fontSize: 18,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 4,
+    color: '#4a4a4a',
+    marginBottom: 16,
+  },
+  ratingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffcc00',
+    borderWidth: 4,
+    borderColor: '#1a1a1a',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    shadowColor: '#1a1a1a',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
+    alignSelf: 'flex-start',
+  },
+  ratingValue: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
+    fontWeight: '900',
+    color: '#1a1a1a',
+    marginLeft: 8,
   },
-  location: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 20,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  rating: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginLeft: 4,
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
-  },
-  statLabel: {
+  reviewsCount: {
     fontSize: 12,
-    color: '#999',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    color: '#1a1a1a',
+    marginLeft: 8,
   },
-  statDivider: {
-    width: 1,
-    backgroundColor: '#e0e0e0',
-    marginHorizontal: 8,
+  gridContainer: {
+    padding: 24,
+    gap: 32,
   },
-  menuContainer: {
-    backgroundColor: '#fff',
+  card: {
+    borderWidth: 4,
+    borderColor: '#1a1a1a',
+    padding: 24,
+    shadowColor: '#1a1a1a',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
+    gap: 16,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  cardTitle: {
+    fontSize: 32,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    color: '#1a1a1a',
+  },
+  reviewsCard: {
+    backgroundColor: '#ffcc00',
+  },
+  reviewsCardTitle: {
+    color: '#1a1a1a',
+  },
+  verifiedButton: {
+    backgroundColor: '#1a1a1a',
+    padding: 16,
+    shadowColor: '#1a1a1a',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
+    alignItems: 'center',
+  },
+  verifiedText: {
+    fontSize: 20,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    color: '#ffffff',
+  },
+  verifiedDescription: {
+    fontSize: 14,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    color: '#4a4a4a',
     marginTop: 8,
   },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  menuIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#E8F4FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  menuItemLabel: {
+  reviewContent: {
     flex: 1,
+    justifyContent: 'center',
+  },
+  reviewQuote: {
+    fontSize: 18,
+    fontWeight: '700',
+    borderLeftWidth: 4,
+    borderLeftColor: '#1a1a1a',
+    paddingLeft: 16,
+    marginBottom: 16,
+    color: '#1a1a1a',
+    lineHeight: 28,
+  },
+  reviewAuthor: {
+    fontSize: 14,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    color: '#4a4a4a',
+  },
+  readAllButton: {
+    backgroundColor: '#f5f0e8',
+    borderWidth: 4,
+    borderColor: '#1a1a1a',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    shadowColor: '#1a1a1a',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
+  },
+  readAllText: {
     fontSize: 16,
-    color: '#333',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    color: '#1a1a1a',
+  },
+  settingsCard: {
+    padding: 0,
+    backgroundColor: '#f5f0e8',
+  },
+  settingsHeader: {
+    padding: 24,
+    borderBottomWidth: 4,
+    borderBottomColor: '#1a1a1a',
+    backgroundColor: '#e8e3da',
+  },
+  settingsTitle: {
+    fontSize: 32,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    color: '#1a1a1a',
+  },
+  settingItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 24,
+  },
+  settingItemBorder: {
+    borderBottomWidth: 4,
+    borderBottomColor: '#1a1a1a',
+  },
+  settingLabel: {
+    fontSize: 20,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    color: '#1a1a1a',
   },
   logoutButton: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    margin: 16,
-    padding: 16,
-    borderRadius: 12,
-    justifyContent: 'center',
+    backgroundColor: '#e63b2e',
+    borderWidth: 4,
+    borderColor: '#1a1a1a',
+    paddingVertical: 24,
+    marginHorizontal: 24,
+    marginTop: 32,
     alignItems: 'center',
-    gap: 8,
+    shadowColor: '#1a1a1a',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
   },
   logoutText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FF3B30',
+    fontSize: 32,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    color: '#ffffff',
   },
 });
