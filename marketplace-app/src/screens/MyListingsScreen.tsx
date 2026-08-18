@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useProducts } from '../context/ProductContext';
 
 interface MyListingsScreenProps {
@@ -8,29 +8,28 @@ interface MyListingsScreenProps {
 }
 
 export const MyListingsScreen: React.FC<MyListingsScreenProps> = ({ navigation }) => {
-  const { products, getProductsBySeller, deleteProduct, updateProduct } = useProducts();
+  const { products, deleteProduct, updateProduct } = useProducts();
   const [activeTab, setActiveTab] = useState<'active' | 'sold'>('active');
 
-  // Filter products - in real app, filter by current user ID
   const activeProducts = products.filter(p => p.isAvailable);
   const soldProducts = products.filter(p => !p.isAvailable);
 
   const displayedProducts = activeTab === 'active' ? activeProducts : soldProducts;
 
-  const handleToggleAvailability = (productId: string, currentStatus: boolean) => {
-    updateProduct(productId, { isAvailable: !currentStatus });
-  };
-
   return (
     <View style={styles.container}>
-      {/* Tabs */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerTitle}>MY LISTINGS</Text>
+        <Text style={styles.headerSubtitle}>Manage your inventory and track sales.</Text>
+      </View>
+
       <View style={styles.tabsContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'active' && styles.activeTab]}
           onPress={() => setActiveTab('active')}
         >
           <Text style={[styles.tabText, activeTab === 'active' && styles.activeTabText]}>
-            Active ({activeProducts.length})
+            ACTIVE ({activeProducts.length})
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -38,25 +37,23 @@ export const MyListingsScreen: React.FC<MyListingsScreenProps> = ({ navigation }
           onPress={() => setActiveTab('sold')}
         >
           <Text style={[styles.tabText, activeTab === 'sold' && styles.activeTabText]}>
-            Sold ({soldProducts.length})
+            SOLD ({soldProducts.length})
           </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Products List */}
       <FlatList
         data={displayedProducts}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => renderProductItem(item, navigation, handleToggleAvailability, deleteProduct)}
+        renderItem={({ item }) => renderProductItem(item, navigation, deleteProduct)}
         contentContainerStyle={styles.listContent}
       />
 
-      {/* Add Listing Button */}
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => navigation.navigate('AddProduct')}
       >
-        <Ionicons name="add" size={32} color="#fff" />
+        <MaterialIcons name="add" size={40} color="#1a1a1a" />
       </TouchableOpacity>
     </View>
   );
@@ -65,53 +62,39 @@ export const MyListingsScreen: React.FC<MyListingsScreenProps> = ({ navigation }
 const renderProductItem = (
   product: any,
   navigation: any,
-  onToggleAvailability: (id: string, status: boolean) => void,
   onDelete: (id: string) => void
 ) => {
   return (
     <View style={styles.productCard}>
-      <Image source={{ uri: product.images[0] }} style={styles.productImage} />
+      <View style={styles.imageContainer}>
+        <Image source={{ uri: product.images[0] }} style={styles.productImage} />
+        {product.isAvailable && (
+          <View style={styles.featuredBadge}>
+            <Text style={styles.featuredText}>ACTIVE</Text>
+          </View>
+        )}
+      </View>
       
       <View style={styles.productInfo}>
-        <Text style={styles.productTitle} numberOfLines={2}>{product.title}</Text>
-        <Text style={styles.productPrice}>${product.price.toLocaleString()}</Text>
-        
-        <View style={styles.productMeta}>
-          <View style={styles.metaItem}>
-            <Ionicons name="eye-outline" size={16} color="#666" />
-            <Text style={styles.metaText}>{product.views}</Text>
-          </View>
-          <View style={styles.metaItem}>
-            <Ionicons name="heart-outline" size={16} color="#666" />
-            <Text style={styles.metaText}>{product.likes}</Text>
-          </View>
-          <View style={styles.metaItem}>
-            <Ionicons name="time-outline" size={16} color="#666" />
-            <Text style={styles.metaText}>
-              {new Date(product.createdAt).toLocaleDateString()}
-            </Text>
+        <View>
+          <Text style={styles.productTitle} numberOfLines={2}>{product.title.toUpperCase()}</Text>
+          <Text style={styles.productPrice}>${product.price.toLocaleString()}</Text>
+          
+          <View style={styles.productMeta}>
+            <Text style={styles.metaText}>VIEWS: {product.views?.toLocaleString() || 0}</Text>
+            <Text style={styles.metaText}>SAVES: {product.likes?.toLocaleString() || 0}</Text>
           </View>
         </View>
-
+        
         <View style={styles.actionButtons}>
           <TouchableOpacity
             style={styles.editButton}
             onPress={() => navigation.navigate('EditProduct', { productId: product.id })}
           >
-            <Ionicons name="create-outline" size={18} color="#007AFF" />
-            <Text style={styles.editButtonText}>Edit</Text>
+            <MaterialIcons name="edit" size={20} color="#1a1a1a" />
+            <Text style={styles.editButtonText}>EDIT</Text>
           </TouchableOpacity>
-
-          {product.isAvailable && (
-            <TouchableOpacity
-              style={styles.markSoldButton}
-              onPress={() => onToggleAvailability(product.id, product.isAvailable)}
-            >
-              <Ionicons name="checkmark-circle-outline" size={18} color="#4CAF50" />
-              <Text style={styles.markSoldButtonText}>Mark Sold</Text>
-            </TouchableOpacity>
-          )}
-
+          
           <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => {
@@ -120,8 +103,7 @@ const renderProductItem = (
               }
             }}
           >
-            <Ionicons name="trash-outline" size={18} color="#FF3B30" />
-            <Text style={styles.deleteButtonText}>Delete</Text>
+            <MaterialIcons name="delete" size={20} color="#e63b2e" />
           </TouchableOpacity>
         </View>
       </View>
@@ -132,144 +114,195 @@ const renderProductItem = (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f5f0e8',
+  },
+  headerContainer: {
+    padding: 24,
+    borderBottomWidth: 4,
+    borderBottomColor: '#1a1a1a',
+  },
+  headerTitle: {
+    fontSize: 48,
+    fontWeight: '900',
+    color: '#1a1a1a',
+    textTransform: 'uppercase',
+    letterSpacing: -2,
+  },
+  headerSubtitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#4a4a4a',
+    marginTop: 16,
+    textTransform: 'uppercase',
   },
   tabsContainer: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    backgroundColor: '#f5f0e8',
+    padding: 16,
+    gap: 16,
   },
   tab: {
-    flex: 1,
+    paddingHorizontal: 32,
     paddingVertical: 16,
-    alignItems: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
+    borderWidth: 2,
+    borderColor: '#1a1a1a',
+    backgroundColor: '#e2ddd4',
+    shadowColor: '#1a1a1a',
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
   },
   activeTab: {
-    borderBottomColor: '#007AFF',
+    backgroundColor: '#1a1a1a',
+    shadowColor: '#1a1a1a',
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
   },
   tabText: {
-    fontSize: 15,
-    color: '#666',
-    fontWeight: '500',
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    textTransform: 'uppercase',
   },
   activeTabText: {
-    color: '#007AFF',
-    fontWeight: '600',
+    color: '#ffffff',
+    fontWeight: '900',
   },
   listContent: {
-    padding: 12,
-    paddingBottom: 100,
+    padding: 16,
+    paddingBottom: 120,
   },
   productCard: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 12,
+    backgroundColor: '#f5f0e8',
+    borderWidth: 4,
+    borderColor: '#1a1a1a',
+    marginBottom: 32,
+    shadowColor: '#1a1a1a',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  },
+  imageContainer: {
+    width: 192,
+    height: 192,
+    borderWidth: 2,
+    borderColor: '#1a1a1a',
+    backgroundColor: '#e2ddd4',
+    position: 'relative',
   },
   productImage: {
-    width: 120,
-    height: 120,
+    width: '100%',
+    height: '100%',
+  },
+  featuredBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: '#ffcc00',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderWidth: 2,
+    borderColor: '#1a1a1a',
+  },
+  featuredText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    textTransform: 'uppercase',
   },
   productInfo: {
     flex: 1,
-    padding: 12,
+    padding: 24,
+    justifyContent: 'space-between',
   },
   productTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 6,
-    height: 40,
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#1a1a1a',
+    textTransform: 'uppercase',
+    lineHeight: 28,
+    marginBottom: 8,
   },
   productPrice: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#007AFF',
-    marginBottom: 8,
+    fontSize: 30,
+    fontWeight: '900',
+    color: '#e63b2e',
+    marginBottom: 16,
   },
   productMeta: {
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 12,
-  },
-  metaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
+    gap: 16,
+    marginBottom: 24,
   },
   metaText: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#4a4a4a',
+    textTransform: 'uppercase',
   },
   actionButtons: {
     flexDirection: 'row',
     gap: 12,
   },
   editButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: '#E8F4FF',
-    borderRadius: 16,
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#e2ddd4',
+    borderWidth: 2,
+    borderColor: '#1a1a1a',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    shadowColor: '#1a1a1a',
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
   },
   editButtonText: {
-    fontSize: 13,
-    color: '#007AFF',
-    fontWeight: '500',
-  },
-  markSoldButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: '#E8F5E9',
-    borderRadius: 16,
-  },
-  markSoldButtonText: {
-    fontSize: 13,
-    color: '#4CAF50',
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    textTransform: 'uppercase',
   },
   deleteButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: '#FFEBEE',
-    borderRadius: 16,
-  },
-  deleteButtonText: {
-    fontSize: 13,
-    color: '#FF3B30',
-    fontWeight: '500',
+    justifyContent: 'center',
+    backgroundColor: '#e2ddd4',
+    borderWidth: 2,
+    borderColor: '#1a1a1a',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    shadowColor: '#1a1a1a',
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
   },
   addButton: {
     position: 'absolute',
-    bottom: 24,
+    bottom: 96,
     right: 24,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#007AFF',
+    width: 80,
+    height: 80,
+    backgroundColor: '#ffcc00',
+    borderWidth: 4,
+    borderColor: '#1a1a1a',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#007AFF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowColor: '#1a1a1a',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
   },
 });
