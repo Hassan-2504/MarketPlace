@@ -6,16 +6,37 @@ import { Product } from '../types';
 interface ProductCardProps {
   product: Product;
   onPress: () => void;
+  isFeatured?: boolean;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress, isFeatured = false }) => {
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
-      <View style={styles.imageContainer}>
-        <Image source={{ uri: product.images[0] }} style={styles.image} />
+    <TouchableOpacity 
+      style={[
+        styles.container,
+        isFeatured && styles.featuredContainer
+      ]} 
+      onPress={onPress}
+    >
+      <View style={[
+        styles.imageContainer,
+        isFeatured && styles.featuredImageContainer
+      ]}>
+        <Image 
+          source={{ uri: product.images[0] }} 
+          style={[
+            styles.image,
+            isFeatured && styles.featuredImage
+          ]} 
+        />
         {!product.isAvailable && (
           <View style={styles.soldBadge}>
             <Text style={styles.soldText}>SOLD</Text>
+          </View>
+        )}
+        {isFeatured && (
+          <View style={styles.saleBadge}>
+            <Text style={styles.saleText}>SALE</Text>
           </View>
         )}
         <TouchableOpacity style={styles.likeButton}>
@@ -27,9 +48,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) =>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.infoContainer}>
-        <Text style={styles.price}>${product.price.toLocaleString()}</Text>
-        <Text style={styles.title} numberOfLines={2}>
+      <View style={[
+        styles.infoContainer,
+        isFeatured && styles.featuredInfoContainer
+      ]}>
+        <Text style={[
+          styles.price,
+          isFeatured && styles.featuredPrice
+        ]}>${product.price.toLocaleString()}</Text>
+        <Text style={[
+          styles.title,
+          isFeatured && styles.featuredTitle
+        ]} numberOfLines={2}>
           {product.title}
         </Text>
         <View style={styles.locationContainer}>
@@ -49,60 +79,116 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) =>
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 6,
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    margin: 8,
+    backgroundColor: '#f5f0e8',
+    borderWidth: 4,
+    borderColor: '#1a1a1a',
+    borderRadius: 0,
+    shadowColor: '#1a1a1a',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  },
+  featuredContainer: {
+    backgroundColor: '#ffcc00',
   },
   imageContainer: {
     position: 'relative',
     aspectRatio: 1,
+    borderBottomWidth: 4,
+    borderBottomColor: '#1a1a1a',
+    backgroundColor: '#e8e3da',
+  },
+  featuredImageContainer: {
+    backgroundColor: '#e8e3da',
   },
   image: {
     width: '100%',
     height: '100%',
   },
+  featuredImage: {
+    // Optional grayscale effect for featured items
+  },
   soldBadge: {
     position: 'absolute',
     top: 8,
     left: 8,
-    backgroundColor: '#FF3B30',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
+    backgroundColor: '#e63b2e',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderWidth: 2,
+    borderColor: '#1a1a1a',
+    borderRadius: 0,
   },
   soldText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '900',
+    fontFamily: 'SpaceGrotesk_700Bold',
+    letterSpacing: 1,
+    textTransform: 'uppercase' as const,
   },
-  likeButton: {
+  saleBadge: {
     position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: 20,
-    padding: 4,
+    backgroundColor: '#e63b2e',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderWidth: 2,
+    borderColor: '#1a1a1a',
+    borderRadius: 0,
+  },
+  saleText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '900',
+    fontFamily: 'SpaceGrotesk_700Bold',
+    letterSpacing: 1,
+    textTransform: 'uppercase' as const,
+  },
+  likeButton: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 0,
+    padding: 8,
+    borderWidth: 2,
+    borderColor: '#1a1a1a',
   },
   infoContainer: {
-    padding: 10,
+    padding: 12,
+  },
+  featuredInfoContainer: {
+    // Special styling for featured product info
   },
   price: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
+    fontFamily: 'SpaceGrotesk_900Black',
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#1a1a1a',
+    marginBottom: 6,
+    letterSpacing: -1,
+  },
+  featuredPrice: {
+    fontSize: 28,
+    color: '#e63b2e',
   },
   title: {
+    fontFamily: 'SpaceGrotesk_700Bold',
     fontSize: 14,
-    color: '#666',
-    marginBottom: 6,
-    height: 36,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 8,
+    lineHeight: 18,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+  },
+  featuredTitle: {
+    fontSize: 16,
   },
   locationContainer: {
     flexDirection: 'row',
@@ -110,13 +196,15 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   location: {
+    fontFamily: 'Inter_400Regular',
     fontSize: 12,
-    color: '#666',
+    color: '#4a4a4a',
     marginLeft: 4,
     flex: 1,
   },
   date: {
+    fontFamily: 'Inter_400Regular',
     fontSize: 11,
-    color: '#999',
+    color: '#4a4a4a',
   },
 });
