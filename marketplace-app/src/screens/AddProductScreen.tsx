@@ -1,284 +1,175 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
-import { useProducts } from '../context/ProductContext';
 
-interface AddProductScreenProps {
-  navigation: any;
-}
-
-export const AddProductScreen: React.FC<AddProductScreenProps> = ({ navigation }) => {
-  const { addProduct } = useProducts();
-  
+const AddProductScreen = () => {
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
-  const [category, setCategory] = useState('');
-  const [condition, setCondition] = useState<'New' | 'Like New' | 'Good' | 'Fair' | 'Poor'>('Good');
-  const [images, setImages] = useState<string[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [description, setDescription] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('FURNITURE');
+  const [selectedCondition, setSelectedCondition] = useState('VINTAGE/PATINA');
+  const [mediaCount, setMediaCount] = useState(0);
 
-  const categories = [
-    'Mobile Phones',
-    'Electronics',
-    'Furniture',
-    'Vehicles',
-    'Fashion',
-    'Sports',
-    'Books',
-    'Home & Garden',
-    'Toys & Games',
-    'Other',
-  ];
+  const categories = ['FURNITURE', 'LIGHTING', 'ART', 'TEXTILES', 'OBJECTS'];
+  const conditions = ['PRISTINE', 'VINTAGE/PATINA', 'NEEDS REPAIR'];
 
-  const conditions: Array<'New' | 'Like New' | 'Good' | 'Fair' | 'Poor'> = [
-    'New',
-    'Like New',
-    'Good',
-    'Fair',
-    'Poor',
-  ];
-
-  const pickImage = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    if (permissionResult.granted === false) {
-      Alert.alert('Permission Required', 'Permission to access camera roll is required!');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      quality: 0.8,
-    });
-
-    if (!result.canceled && result.assets) {
-      setImages(prev => [...prev, ...result.assets.map(asset => asset.uri)]);
-    }
+  const handleUpload = () => {
+    // Handle media upload logic
+    console.log('Upload triggered');
   };
 
-  const takePhoto = async () => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-    
-    if (permissionResult.granted === false) {
-      Alert.alert('Permission Required', 'Permission to access camera is required!');
-      return;
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      quality: 0.8,
-    });
-
-    if (!result.canceled && result.assets) {
-      setImages(prev => [...prev, ...result.assets.map(asset => asset.uri)]);
-    }
-  };
-
-  const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleSubmit = async () => {
-    // Validation
-    if (!title.trim()) {
-      Alert.alert('Error', 'Please enter a title');
-      return;
-    }
-    if (!description.trim()) {
-      Alert.alert('Error', 'Please enter a description');
-      return;
-    }
-    if (!price || parseFloat(price) <= 0) {
-      Alert.alert('Error', 'Please enter a valid price');
-      return;
-    }
-    if (!category) {
-      Alert.alert('Error', 'Please select a category');
-      return;
-    }
-    if (images.length === 0) {
-      Alert.alert('Error', 'Please add at least one image');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await addProduct({
-        title: title.trim(),
-        description: description.trim(),
-        price: parseFloat(price),
-        currency: 'USD',
-        category,
-        condition,
-        images,
-        location: {
-          latitude: 40.7128,
-          longitude: -74.0060,
-          address: '',
-          city: 'New York',
-          state: 'NY',
-          country: 'USA',
-          zipCode: '10001',
-        },
-        isAvailable: true,
-      });
-      
-      Alert.alert('Success', 'Your listing has been created!', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
-    } catch (error) {
-      Alert.alert('Error', 'Failed to create listing. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleSubmit = () => {
+    // Handle form submission
+    console.log('Publish listing', { title, price, description, selectedCategory, selectedCondition });
   };
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Images Section */}
-      <View style={styles.imagesSection}>
-        <Text style={styles.sectionTitle}>Photos & Videos</Text>
-        <View style={styles.imagesGrid}>
-          {images.map((image, index) => (
-            <View key={index} style={styles.imageContainer}>
-              <Image source={{ uri: image }} style={styles.image} />
-              <TouchableOpacity
-                style={styles.removeImageButton}
-                onPress={() => removeImage(index)}
-              >
-                <Ionicons name="close-circle" size={24} color="#FF3B30" />
-              </TouchableOpacity>
-            </View>
-          ))}
-          
-          {images.length < 10 && (
-            <>
-              <TouchableOpacity style={styles.addButton} onPress={pickImage}>
-                <Ionicons name="images-outline" size={32} color="#007AFF" />
-                <Text style={styles.addButtonText}>Gallery</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.addButton} onPress={takePhoto}>
-                <Ionicons name="camera-outline" size={32} color="#007AFF" />
-                <Text style={styles.addButtonText}>Camera</Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
-        <Text style={styles.imageHint}>Add up to 10 photos or videos</Text>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* Header Section */}
+      <View style={styles.headerSection}>
+        <Text style={styles.headerTitle}>CREATE LISTING</Text>
+        <View style={styles.headerUnderline} />
+        <Text style={styles.headerSubtitle}>
+          Upload images and describe your piece. Remember, form follows function.
+        </Text>
       </View>
 
-      {/* Title */}
-      <View style={styles.inputSection}>
-        <Text style={styles.label}>Title *</Text>
+      {/* Upload Area */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="photo-camera" size={28} color="#1a1a1a" />
+          <Text style={styles.sectionTitle}>MEDIA VISUALS</Text>
+        </View>
+        
+        <TouchableOpacity style={styles.uploadArea} onPress={handleUpload}>
+          <Ionicons name="upload-file" size={64} color="#1a1a1a" />
+          <Text style={styles.uploadText}>DRAG & DROP OR CLICK</Text>
+          <Text style={styles.uploadSubtext}>JPG, PNG, WEBP (Max 5MB)</Text>
+        </TouchableOpacity>
+        
+        {mediaCount > 0 && (
+          <View style={styles.mediaCount}>
+            <Text style={styles.mediaCountText}>{mediaCount} files selected</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Text Fields */}
+      <View style={styles.section}>
         <TextInput
           style={styles.input}
-          placeholder="What are you selling?"
+          placeholder="PRODUCT TITLE / NOMENCLATURE"
+          placeholderTextColor="#4a4a4a"
           value={title}
           onChangeText={setTitle}
-          maxLength={60}
+          autoCapitalize="words"
         />
-        <Text style={styles.charCount}>{title.length}/60</Text>
-      </View>
 
-      {/* Price */}
-      <View style={styles.inputSection}>
-        <Text style={styles.label}>Price *</Text>
-        <View style={styles.priceInputContainer}>
-          <Text style={styles.currencySymbol}>$</Text>
-          <TextInput
-            style={styles.priceInput}
-            placeholder="0.00"
-            value={price}
-            onChangeText={setPrice}
-            keyboardType="numeric"
-          />
-        </View>
-      </View>
-
-      {/* Category */}
-      <View style={styles.inputSection}>
-        <Text style={styles.label}>Category *</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={styles.categoriesContainer}>
-            {categories.map(cat => (
-              <TouchableOpacity
-                key={cat}
-                style={[
-                  styles.categoryChip,
-                  category === cat && styles.categoryChipSelected,
-                ]}
-                onPress={() => setCategory(cat)}
-              >
-                <Text
-                  style={[
-                    styles.categoryChipText,
-                    category === cat && styles.categoryChipTextSelected,
-                  ]}
-                >
-                  {cat}
-                </Text>
-              </TouchableOpacity>
-            ))}
+        <View style={styles.priceRow}>
+          <View style={styles.priceInputContainer}>
+            <Text style={styles.priceSymbol}>$</Text>
+            <TextInput
+              style={[styles.input, styles.priceInput]}
+              placeholder="0.00"
+              placeholderTextColor="#4a4a4a"
+              value={price}
+              onChangeText={setPrice}
+              keyboardType="numeric"
+            />
           </View>
-        </ScrollView>
-      </View>
-
-      {/* Condition */}
-      <View style={styles.inputSection}>
-        <Text style={styles.label}>Condition *</Text>
-        <View style={styles.conditionsContainer}>
-          {conditions.map(cond => (
-            <TouchableOpacity
-              key={cond}
-              style={[
-                styles.conditionChip,
-                condition === cond && styles.conditionChipSelected,
-              ]}
-              onPress={() => setCondition(cond)}
-            >
-              <Text
-                style={[
-                  styles.conditionChipText,
-                  condition === cond && styles.conditionChipTextSelected,
-                ]}
-              >
-                {cond}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          <View style={styles.currencyContainer}>
+            <TextInput
+              style={[styles.input, styles.currencyInput]}
+              value="USD"
+              editable={false}
+            />
+          </View>
         </View>
-      </View>
 
-      {/* Description */}
-      <View style={styles.inputSection}>
-        <Text style={styles.label}>Description *</Text>
+        <Text style={styles.detailsTitle}>STRUCTURAL DETAILS</Text>
         <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Describe your item in detail..."
+          style={styles.textarea}
+          placeholder="Describe the materials, dimensions, and history of the object..."
+          placeholderTextColor="#4a4a4a"
           value={description}
           onChangeText={setDescription}
           multiline
-          numberOfLines={6}
+          numberOfLines={5}
           textAlignVertical="top"
         />
       </View>
 
-      {/* Submit Button */}
-      <TouchableOpacity
-        style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
-        onPress={handleSubmit}
-        disabled={isSubmitting}
-      >
-        <Text style={styles.submitButtonText}>
-          {isSubmitting ? 'Posting...' : 'Post Listing'}
-        </Text>
-      </TouchableOpacity>
+      {/* Categorization */}
+      <View style={styles.categorizationSection}>
+        <View style={styles.categoryColumn}>
+          <Text style={styles.columnTitle}>CATEGORY</Text>
+          <View style={styles.chipContainer}>
+            {categories.map((category) => (
+              <TouchableOpacity
+                key={category}
+                style={[
+                  styles.chip,
+                  selectedCategory === category && styles.chipActive,
+                ]}
+                onPress={() => setSelectedCategory(category)}
+              >
+                <Text
+                  style={[
+                    styles.chipText,
+                    selectedCategory === category && styles.chipTextActive,
+                  ]}
+                >
+                  {category}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
 
-      <View style={{ height: 50 }} />
+        <View style={styles.categoryColumn}>
+          <Text style={styles.columnTitle}>CONDITION</Text>
+          <View style={styles.chipContainer}>
+            {conditions.map((condition) => (
+              <TouchableOpacity
+                key={condition}
+                style={[
+                  styles.chip,
+                  selectedCondition === condition && styles.chipActive,
+                ]}
+                onPress={() => setSelectedCondition(condition)}
+              >
+                <Text
+                  style={[
+                    styles.chipText,
+                    selectedCondition === condition && styles.chipTextActive,
+                  ]}
+                >
+                  {condition}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </View>
+
+      {/* Submit Button */}
+      <View style={styles.submitSection}>
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          <Text style={styles.submitButtonText}>PUBLISH LISTING</Text>
+          <Ionicons name="arrow-forward" size={32} color="#ffffff" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Bottom Spacer for Mobile Nav */}
+      <View style={{ height: 80 }} />
     </ScrollView>
   );
 };
@@ -286,177 +177,228 @@ export const AddProductScreen: React.FC<AddProductScreenProps> = ({ navigation }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f5f0e8',
+    paddingHorizontal: Platform.OS === 'web' ? 48 : 16,
+    paddingTop: 32,
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 12,
+  headerSection: {
+    marginBottom: 48,
   },
-  imagesSection: {
-    backgroundColor: '#fff',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  imagesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  imageContainer: {
-    position: 'relative',
-    width: 100,
-    height: 100,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 8,
-  },
-  removeImageButton: {
-    position: 'absolute',
-    top: -8,
-    right: -8,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-  },
-  addButton: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#007AFF',
-    borderStyle: 'dashed',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#E8F4FF',
-  },
-  addButtonText: {
-    marginTop: 4,
-    color: '#007AFF',
-    fontSize: 12,
-  },
-  imageHint: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 8,
-  },
-  inputSection: {
-    backgroundColor: '#fff',
-    padding: 16,
-    marginTop: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
+  headerTitle: {
+    fontFamily: 'SpaceGrotesk_700Bold',
+    fontSize: 48,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: -2,
+    color: '#1a1a1a',
     marginBottom: 8,
   },
+  headerUnderline: {
+    position: 'absolute',
+    bottom: 4,
+    left: 0,
+    right: 0,
+    height: 16,
+    backgroundColor: '#ffcc00',
+    zIndex: -1,
+  },
+  headerSubtitle: {
+    fontFamily: 'Inter_700Bold',
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#4a4a4a',
+    maxWidth: 400,
+    marginTop: 8,
+  },
+  section: {
+    marginBottom: 48,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    gap: 8,
+  },
+  sectionTitle: {
+    fontFamily: 'SpaceGrotesk_700Bold',
+    fontSize: 22,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    color: '#1a1a1a',
+  },
+  uploadArea: {
+    borderWidth: 4,
+    borderStyle: 'dashed',
+    borderColor: '#1a1a1a',
+    backgroundColor: '#ffffff',
+    height: 250,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  uploadText: {
+    fontFamily: 'SpaceGrotesk_700Bold',
+    fontSize: 20,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    color: '#1a1a1a',
+    marginTop: 16,
+  },
+  uploadSubtext: {
+    fontFamily: 'Inter_400Regular',
+    fontSize: 14,
+    color: '#4a4a4a',
+    marginTop: 8,
+  },
+  mediaCount: {
+    marginTop: 12,
+    padding: 8,
+    backgroundColor: '#ffcc00',
+    borderWidth: 2,
+    borderColor: '#1a1a1a',
+  },
+  mediaCountText: {
+    fontFamily: 'SpaceGrotesk_700Bold',
+    fontSize: 14,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    color: '#1a1a1a',
+  },
   input: {
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 16,
-    color: '#333',
-    backgroundColor: '#f9f9f9',
+    fontFamily: 'SpaceGrotesk_700Bold',
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    borderBottomWidth: 4,
+    borderBottomColor: '#1a1a1a',
+    paddingBottom: 16,
+    marginBottom: 8,
+    backgroundColor: 'transparent',
   },
-  textArea: {
-    height: 120,
-  },
-  charCount: {
-    fontSize: 12,
-    color: '#999',
-    textAlign: 'right',
-    marginTop: 4,
+  priceRow: {
+    flexDirection: 'row',
+    gap: 32,
+    marginTop: 32,
+    marginBottom: 32,
   },
   priceInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#f9f9f9',
+    flex: 2,
+    position: 'relative',
   },
-  currencySymbol: {
-    fontSize: 18,
-    color: '#333',
-    marginRight: 4,
+  priceSymbol: {
+    position: 'absolute',
+    left: 0,
+    top: 8,
+    fontFamily: 'SpaceGrotesk_700Bold',
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    zIndex: 1,
   },
   priceInput: {
+    paddingLeft: 32,
+  },
+  currencyContainer: {
     flex: 1,
-    paddingVertical: 10,
+  },
+  currencyInput: {
+    textAlign: 'center',
+  },
+  detailsTitle: {
+    fontFamily: 'SpaceGrotesk_700Bold',
+    fontSize: 20,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    color: '#1a1a1a',
+    marginTop: 32,
+    marginBottom: 16,
+  },
+  textarea: {
+    fontFamily: 'Inter_400Regular',
     fontSize: 16,
-    color: '#333',
+    borderWidth: 4,
+    borderColor: '#1a1a1a',
+    backgroundColor: '#ffffff',
+    padding: 16,
+    minHeight: 120,
+    color: '#1a1a1a',
   },
-  categoriesContainer: {
+  categorizationSection: {
+    borderTopWidth: 4,
+    borderTopColor: '#1a1a1a',
+    paddingTop: 32,
     flexDirection: 'row',
-    gap: 8,
+    gap: 48,
+    marginBottom: 48,
   },
-  categoryChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    backgroundColor: '#fff',
+  categoryColumn: {
+    flex: 1,
   },
-  categoryChipSelected: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+  columnTitle: {
+    fontFamily: 'SpaceGrotesk_700Bold',
+    fontSize: 20,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    color: '#1a1a1a',
+    marginBottom: 24,
   },
-  categoryChipText: {
-    fontSize: 14,
-    color: '#666',
-  },
-  categoryChipTextSelected: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-  conditionsContainer: {
+  chipContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 12,
   },
-  conditionChip: {
+  chip: {
+    borderWidth: 2,
+    borderColor: '#1a1a1a',
+    backgroundColor: 'transparent',
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    backgroundColor: '#fff',
   },
-  conditionChipSelected: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+  chipActive: {
+    backgroundColor: '#1a1a1a',
+    shadowColor: '#ffcc00',
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
   },
-  conditionChipText: {
+  chipText: {
+    fontFamily: 'SpaceGrotesk_700Bold',
     fontSize: 14,
-    color: '#666',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    color: '#1a1a1a',
   },
-  conditionChipTextSelected: {
-    color: '#fff',
-    fontWeight: '600',
+  chipTextActive: {
+    color: '#ffffff',
+  },
+  submitSection: {
+    paddingTop: 48,
+    paddingBottom: 32,
   },
   submitButton: {
-    backgroundColor: '#007AFF',
-    margin: 16,
+    backgroundColor: '#1a1a1a',
+    borderWidth: 4,
+    borderColor: '#1a1a1a',
     paddingVertical: 16,
-    borderRadius: 12,
+    paddingHorizontal: 32,
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-  },
-  submitButtonDisabled: {
-    opacity: 0.6,
+    gap: 16,
+    shadowColor: '#ffcc00',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
   },
   submitButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
+    fontFamily: 'SpaceGrotesk_900Black',
+    fontSize: 24,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    color: '#ffffff',
+    letterSpacing: 1,
   },
 });
+
+export default AddProductScreen;
